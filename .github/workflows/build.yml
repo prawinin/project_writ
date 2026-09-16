@@ -1,0 +1,87 @@
+name: Build Writ Executables
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+    paths-ignore:
+      - 'README.md'
+      - '.gitignore'
+      - 'LICENSE*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Build app bundle (PyInstaller onedir)
+      run: |
+        python scripts/generate_key.py
+        pyinstaller --noconfirm Writ.spec
+        mkdir -p dist_data
+        touch dist_data/writ_data.dat
+
+    - name: Package Windows installer (Inno Setup)
+      if: matrix.os == 'windows-latest'
+      run: |
+        choco install innosetup -y
+        iscc installer/windows/writ.iss
+
+    - name: Package macOS DMG
+      if: matrix.os == 'macos-latest'
+      run: |
+        bash installer/macos/build_dmg.sh
+        rm -rf dist-installer/dmg-stage
+
+    - name: Package Linux tarball
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        chmod +x installer/linux/install.sh
+        mkdir -p dist-installer
+        tar -czf dist-installer/Writ-1.0.0-Linux.tar.gz dist/Writ installer/linux/install.sh scripts/setup_model.py
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: Writ-${{ matrix.os }}
+        path: dist-installer/
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: release-assets/
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        name: ${{ github.ref_name }}
+        draft: false
+        prerelease: false
+        files: release-assets/**/*

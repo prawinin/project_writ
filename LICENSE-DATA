@@ -1,0 +1,20 @@
+Writ Knowledge Base — Proprietary License
+
+The encrypted knowledge-base file (writ_data.dat) shipped with Writ releases
+is proprietary to the licensor. Underlying court judgments and statutes are
+public records of the Republic of India; what is licensed here is the curated,
+cleaned, structured and encrypted compilation, including AI-generated
+question-answer pairs and landmark notes.
+
+You MAY:
+- use the knowledge base through the Writ application,
+- keep a local copy installed by the Writ installer for that purpose.
+
+You MAY NOT:
+- extract, decrypt, copy, republish or redistribute the knowledge base or any
+  substantial part of it outside the Writ application,
+- use it to train other models or build competing datasets or services,
+- circumvent the technical measures protecting it.
+
+Breach terminates your rights under this license. Contact prawin@vyapai.tech
+for commercial licensing.

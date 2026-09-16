@@ -1,0 +1,12 @@
+# Writ runtime + build dependencies
+pywebview>=6.0
+sqlcipher3-binary>=0.5; sys_platform == 'linux'
+pandas>=2.0
+pyarrow>=15.0
+pyinstaller>=6.0
+Pillow>=10.0
+# offline semantic reranker (MiniLM ONNX; torch NOT required)
+onnxruntime>=1.20
+tokenizers>=0.21
+huggingface_hub>=0.26
+numpy>=1.26

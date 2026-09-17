@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writ — Indian Legal Intelligence</title>
+  <meta name="description" content="Writ is a fully offline Indian legal research assistant. A fine-tuned LLM combined with an encrypted on-device knowledge base of judgments, acts, and curated legal notes. No account. No cloud." />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#faf9f6" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Writ — Indian Legal Intelligence" />
+  <meta property="og:description" content="Fully offline Indian legal research. Queries never leave your machine." />
+  <meta property="og:image" content="https://raw.githubusercontent.com/prawinin/writ/main/assets/icon.png" />
+  <meta property="og:url" content="https://writ.pages.dev" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Writ — Indian Legal Intelligence" />
+  <meta name="twitter:description" content="Fully offline Indian legal research. Queries never leave your machine." />
+  <link rel="canonical" href="https://writ.pages.dev" />
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/prawinin/writ/main/assets/icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:      #0f0f0e;
+      --ink-2:    #3a3936;
+      --ink-3:    #6b6966;
+      --rule:     #e2e0dc;
+      --rule-2:   #f0ede8;
+      --paper:    #faf9f6;
+      --paper-2:  #f3f1ec;
+      --gold:     #b8860b;
+      --radius:   6px;
+      --serif:    'Cormorant Garamond', Georgia, serif;
+      --sans:     'Inter', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      inset-inline: 0;
+      z-index: 100;
+      background: rgba(250, 249, 246, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--rule);
+      padding: 0 max(24px, 5vw);
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo img {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+    }
+
+    .nav-logo-text {
+      font-family: var(--serif);
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--ink-2);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--ink); }
+
+    .nav-cta {
+      font-size: 0.8125rem !important;
+      font-weight: 500 !important;
+      color: var(--paper) !important;
+      background: var(--ink);
+      padding: 8px 20px;
+      border-radius: var(--radius);
+      transition: background 0.2s, transform 0.15s;
+      letter-spacing: 0.02em !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--ink-2) !important;
+      transform: translateY(-1px);
+    }
+
+    .section { padding: 100px max(24px, 5vw); }
+    .container { max-width: 1100px; margin-inline: auto; }
+
+    hr.rule {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 0 max(24px, 5vw);
+    }
+
+    .hero {
+      padding-top: 160px;
+      padding-bottom: 100px;
+      padding-inline: max(24px, 5vw);
+      max-width: 1100px;
+      margin-inline: auto;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 7vw, 6rem);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      max-width: 820px;
+      margin-bottom: 28px;
+    }
+
+    h1 em { font-style: italic; color: var(--ink-2); }
+
+    .hero-sub {
+      font-size: 1.0625rem;
+      font-weight: 300;
+      color: var(--ink-2);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--sans);
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 14px 28px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--ink-2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(15,15,14,0.15);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--ink-2);
+      text-decoration: none;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 2px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .btn-secondary:hover { color: var(--ink); border-color: var(--ink-3); }
+
+    .hero-meta {
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat { display: flex; flex-direction: column; gap: 4px; }
+
+    .hero-stat-val {
+      font-family: var(--serif);
+      font-size: 1.75rem;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .hero-stat-label {
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    .bento-card {
+      background: var(--paper-2);
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      padding: 36px;
+      transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+    }
+
+    .bento-card:hover {
+      border-color: var(--ink-3);
+      box-shadow: 0 4px 24px rgba(15,15,14,0.07);
+      transform: translateY(-2px);
+    }
+
+    .bento-card.span-7 { grid-column: span 7; }
+    .bento-card.span-5 { grid-column: span 5; }
+    .bento-card.span-4 { grid-column: span 4; }
+    .bento-card.span-8 { grid-column: span 8; }
+    .bento-card.span-6 { grid-column: span 6; }
+
+    .bento-icon { width: 40px; height: 40px; margin-bottom: 24px; opacity: 0.6; }
+
+    .bento-card h3 {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: var(--ink);
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+
+    .bento-card p { font-size: 0.875rem; font-weight: 300; color: var(--ink-2); line-height: 1.7; }
+
+    .bento-card.dark { background: var(--ink); border-color: var(--ink); }
+    .bento-card.dark h3 { color: var(--paper); }
+    .bento-card.dark p { color: rgba(250,249,246,0.55); }
+    .bento-card.dark .bento-icon { opacity: 0.35; filter: invert(1); }
+
+    .section-label {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      font-weight: 400;
+      line-height: 1.1;
+      color: var(--ink);
+      margin-bottom: 20px;
+    }
+
+    .section-intro {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--ink-2);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 56px;
+    }
+
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); }
+
+    .step {
+      padding: 40px 32px;
+      border-right: 1px solid var(--rule);
+    }
+
+    .step:last-child { border-right: none; }
+
+    .step-num {
+      font-family: var(--serif);
+      font-size: 3.5rem;
+      font-weight: 300;
+      color: var(--rule);
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+
+    .step h3 { font-size: 0.9375rem; font-weight: 500; color: var(--ink); margin-bottom: 10px; }
+    .step p { font-size: 0.8125rem; font-weight: 300; color: var(--ink-3); line-height: 1.65; }
+
+    .download-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    .download-card {
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .download-card:hover {
+      border-color: var(--ink-3);
+      box-shadow: 0 4px 20px rgba(15,15,14,0.08);
+    }
+
+    .download-card-header { display: flex; align-items: center; gap: 14px; }
+
+    .dl-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: var(--paper-2);
+      border: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .dl-icon svg { width: 20px; height: 20px; stroke: var(--ink-2); }
+    .dl-os { font-size: 0.9375rem; font-weight: 500; color: var(--ink); }
+    .dl-format { font-size: 0.75rem; color: var(--ink-3); font-weight: 300; }
+
+    .dl-steps { list-style: none; display: flex; flex-direction: column; gap: 8px; counter-reset: step; }
+
+    .dl-steps li {
+      font-size: 0.8125rem;
+      color: var(--ink-2);
+      font-weight: 300;
+      display: flex;
+      gap: 10px;
+      line-height: 1.55;
+      counter-increment: step;
+    }
+
+    .dl-steps li::before {
+      content: counter(step);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--rule-2);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      color: var(--ink-2);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .dl-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      letter-spacing: 0.02em;
+    }
+
+    .dl-btn:hover { background: var(--ink-2); transform: translateY(-1px); }
+
+    .terminal { background: #1a1a18; border-radius: 10px; overflow: hidden; font-family: 'SF Mono', 'Fira Code', monospace; }
+
+    .terminal-bar {
+      background: #2a2a28;
+      padding: 10px 16px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .terminal-dot:nth-child(1) { background: #ff5f57; }
+    .terminal-dot:nth-child(2) { background: #ffbd2e; }
+    .terminal-dot:nth-child(3) { background: #28c840; }
+
+    .terminal-body { padding: 20px 24px; font-size: 0.8125rem; line-height: 1.7; color: #a0a09a; }
+    .terminal-body .prompt { color: #d4a017; }
+    .terminal-body .cmd { color: #e8e6e0; }
+    .terminal-body .ok { color: #28c840; }
+
+    .notice {
+      background: var(--paper-2);
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      padding: 24px 32px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .notice p { font-size: 0.8125rem; color: var(--ink-2); font-weight: 300; line-height: 1.65; }
+    .notice p strong { font-weight: 500; color: var(--ink); }
+    .notice code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      background: var(--rule-2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.8125rem;
+    }
+
+    .quote-section { background: var(--ink); padding: 100px max(24px, 5vw); }
+
+    .quote-section blockquote {
+      font-family: var(--serif);
+      font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+      font-weight: 300;
+      color: rgba(250,249,246,0.9);
+      max-width: 820px;
+      margin-inline: auto;
+      line-height: 1.35;
+    }
+
+    .quote-section cite {
+      display: block;
+      font-family: var(--sans);
+      font-style: normal;
+      font-size: 0.8125rem;
+      font-weight: 300;
+      color: rgba(250,249,246,0.35);
+      margin-top: 32px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 56px max(24px, 5vw);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .footer-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .footer-logo img { width: 24px; height: 24px; border-radius: 4px; }
+    .footer-logo-text { font-family: var(--serif); font-size: 1.1rem; color: var(--ink); font-weight: 400; }
+
+    .footer-links { display: flex; gap: 28px; list-style: none; flex-wrap: wrap; }
+    .footer-links a { font-size: 0.8125rem; color: var(--ink-3); text-decoration: none; font-weight: 300; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--ink); }
+    .footer-copy { font-size: 0.75rem; color: var(--ink-3); font-weight: 300; width: 100%; }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 900px) {
+      .bento-card.span-7, .bento-card.span-5, .bento-card.span-4, .bento-card.span-8, .bento-card.span-6 { grid-column: span 12; }
+      .steps, .download-grid { grid-template-columns: 1fr; }
+      .step { border-right: none; border-bottom: 1px solid var(--rule); }
+      .step:last-child { border-bottom: none; }
+      .nav-links { display: none; }
+      footer { flex-direction: column; align-items: flex-start; }
+      .legal-grid { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="nav-logo" aria-label="Writ home">
+      <img src="https://raw.githubusercontent.com/prawinin/writ/main/assets/icon.png" alt="Writ icon" />
+      <span class="nav-logo-text">Writ</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#download">Download</a></li>
+      <li><a href="https://prawin.app" target="_blank" rel="noopener">Author</a></li>
+      <li><a href="https://github.com/prawinin/writ/releases" class="nav-cta" id="nav-download-btn">Download</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="hero-eyebrow" aria-hidden="true">Indian Legal Intelligence</div>
+    <h1 id="hero-heading">Research case law.<br /><em>Entirely off the grid.</em></h1>
+    <p class="hero-sub">Writ combines a fine-tuned language model with an encrypted on-device knowledge base — judgments, statutes, curated legal notes — retrieved through hybrid keyword and neural search. No account. No cloud. Queries never leave your machine.</p>
+    <div class="hero-actions">
+      <a href="https://github.com/prawinin/writ/releases" id="hero-download-btn" class="btn-primary" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download for Free
+      </a>
+      <a href="https://github.com/prawinin/writ" id="hero-github-btn" class="btn-secondary" target="_blank" rel="noopener">
+        View on GitHub
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+    <div class="hero-meta" aria-label="Key facts">
+      <div class="hero-stat"><span class="hero-stat-val">100%</span><span class="hero-stat-label">Offline</span></div>
+      <div class="hero-stat"><span class="hero-stat-val">~2.5 GB</span><span class="hero-stat-label">Model size</span></div>
+      <div class="hero-stat"><span class="hero-stat-val">3 Platforms</span><span class="hero-stat-label">Win / Mac / Linux</span></div>
+      <div class="hero-stat"><span class="hero-stat-val">0 Accounts</span><span class="hero-stat-label">Required</span></div>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <section class="section" id="features" aria-labelledby="features-heading">
+    <div class="container">
+      <p class="section-label reveal">Capabilities</p>
+      <h2 id="features-heading" class="reveal">What's inside the framework.</h2>
+      <p class="section-intro reveal">Every architectural decision prioritises privacy, depth, and precision over convenience and cloud dependency.</p>
+      <div class="bento reveal">
+        <div class="bento-card span-7">
+          <svg class="bento-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <h3>Fully On-Device</h3>
+          <p>The complete inference pipeline — model loading, retrieval, generation, and re-ranking — runs on your local hardware via Ollama. Nothing is transmitted to any external server. Your research stays yours.</p>
+        </div>
+        <div class="bento-card span-5 dark">
+          <svg class="bento-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <h3>Encrypted Knowledge Base</h3>
+          <p>Judgments, acts, and curated legal notes stored encrypted on-device. No plaintext exposure at rest.</p>
+        </div>
+        <div class="bento-card span-4">
+          <svg class="bento-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <h3>Hybrid Retrieval</h3>
+          <p>BM25 keyword search combined with neural re-ranking surfaces the most relevant passages, not just the most frequent matches.</p>
+        </div>
+        <div class="bento-card span-8">
+          <svg class="bento-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 8v4l3 3"/></svg>
+          <h3>Vidhi — Fine-tuned on Indian Law</h3>
+          <p>Writ runs Vidhi (Llama 3.2 3B fine-tune), a model trained specifically on Indian legal texts. It understands the structure of judgments, identifies precedents, and reasons about statutory provisions in context.</p>
+        </div>
+        <div class="bento-card span-6">
+          <svg class="bento-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <h3>Persistent Research Sessions</h3>
+          <p>Save and restore multi-turn research sessions. Annotate retrieved passages and build a structured research trail — stored locally.</p>
+        </div>
+        <div class="bento-card span-6">
+          <svg class="bento-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          <h3>Clean, Distraction-free UI</h3>
+          <p>A focused interface designed for long-form legal reading. Light and dark modes. No telemetry, no banners, no feature clutter.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <section class="section" id="how-it-works" aria-labelledby="how-heading">
+    <div class="container">
+      <p class="section-label reveal">Architecture</p>
+      <h2 id="how-heading" class="reveal">How a query becomes an answer.</h2>
+      <p class="section-intro reveal">Four steps from your prompt to a grounded, cited legal response — all on your machine.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Query Input</h3>
+        <p>Submit a natural-language legal question or a case-law lookup. No query syntax required.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Hybrid Retrieval</h3>
+        <p>BM25 keyword search across the encrypted knowledge base is fused with a neural embedding pass and candidates are scored.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Neural Re-rank</h3>
+        <p>A cross-encoder reorders results by semantic relevance, surfacing the most on-point paragraphs from judgments and statutes.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <h3>Grounded Generation</h3>
+        <p>Vidhi receives the top passages as context and generates a cited, structured response entirely on your hardware.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="quote-section" aria-label="Mission statement">
+    <blockquote class="container">
+      "The right to access justice should not require trusting a third-party server with the most sensitive details of a legal matter."
+      <cite>— Writ, built for privacy-first legal research</cite>
+    </blockquote>
+  </section>
+
+  <section class="section" id="download" aria-labelledby="download-heading">
+    <div class="container">
+      <p class="section-label reveal">Get Started</p>
+      <h2 id="download-heading" class="reveal">Download Writ.</h2>
+      <p class="section-intro reveal">Free for personal, non-commercial use. No account required. Windows, macOS, and Linux.</p>
+
+      <div class="download-grid reveal">
+        <div class="download-card">
+          <div class="download-card-header">
+            <div class="dl-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="9" height="9"/><rect x="13" y="3" width="9" height="9"/><rect x="2" y="13" width="9" height="9"/><rect x="13" y="13" width="9" height="9"/></svg>
+            </div>
+            <div><div class="dl-os">Windows</div><div class="dl-format">Installer — .exe · 64-bit</div></div>
+          </div>
+          <ol class="dl-steps">
+            <li>Download <code>Writ-Setup-1.0.0-Windows.exe</code></li>
+            <li>Run the installer and follow the wizard</li>
+            <li>Install <a href="https://ollama.com" target="_blank" rel="noopener" style="color:var(--ink);font-weight:400;">Ollama</a> if not already present</li>
+            <li>Launch Writ — Vidhi downloads automatically on first run</li>
+          </ol>
+          <a href="https://github.com/prawinin/writ/releases" id="windows-download-btn" class="dl-btn" target="_blank" rel="noopener">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download for Windows
+          </a>
+        </div>
+
+        <div class="download-card">
+          <div class="download-card-header">
+            <div class="dl-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2C7 2 4 6 4 10c0 5 3 10 8 10s8-5 8-10c0-4-3-8-8-8z"/><path d="M12 2c0 0 2 4 2 8s-2 8-2 8"/><line x1="4" y1="10" x2="20" y2="10"/></svg>
+            </div>
+            <div><div class="dl-os">macOS</div><div class="dl-format">Disk Image — .dmg · Universal</div></div>
+          </div>
+          <ol class="dl-steps">
+            <li>Download <code>Writ-1.0.0-Mac.dmg</code></li>
+            <li>Open the disk image, drag <strong>Writ.app</strong> to Applications</li>
+            <li>Install <a href="https://ollama.com" target="_blank" rel="noopener" style="color:var(--ink);font-weight:400;">Ollama</a> if not already present</li>
+            <li>Launch from Spotlight — Vidhi downloads automatically</li>
+          </ol>
+          <a href="https://github.com/prawinin/writ/releases" id="macos-download-btn" class="dl-btn" target="_blank" rel="noopener">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download for macOS
+          </a>
+        </div>
+
+        <div class="download-card">
+          <div class="download-card-header">
+            <div class="dl-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            </div>
+            <div><div class="dl-os">Linux</div><div class="dl-format">Archive — .tar.gz · x86_64</div></div>
+          </div>
+          <ol class="dl-steps">
+            <li>Download <code>Writ-1.0.0-Linux.tar.gz</code></li>
+            <li>Extract and run the installer script</li>
+            <li>Install <a href="https://ollama.com" target="_blank" rel="noopener" style="color:var(--ink);font-weight:400;">Ollama</a> if not already present</li>
+            <li>Launch Writ — Vidhi downloads automatically on first run</li>
+          </ol>
+          <div class="terminal" style="margin-bottom: 4px;">
+            <div class="terminal-bar" aria-hidden="true">
+              <div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div>
+            </div>
+            <div class="terminal-body">
+              <div><span class="prompt">$</span> <span class="cmd">tar -xzf Writ-1.0.0-Linux.tar.gz</span></div>
+              <div><span class="prompt">$</span> <span class="cmd">cd Writ-1.0.0-Linux && ./install.sh</span></div>
+              <div class="ok">Installation complete.</div>
+            </div>
+          </div>
+          <a href="https://github.com/prawinin/writ/releases" id="linux-download-btn" class="dl-btn" target="_blank" rel="noopener">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download for Linux
+          </a>
+        </div>
+      </div>
+
+      <div class="notice reveal" style="margin-top:32px;" role="note">
+        <p>
+          <strong>Prerequisites.</strong> Writ requires <a href="https://ollama.com" target="_blank" rel="noopener" style="color:var(--ink);font-weight:500;">Ollama</a> running locally for model inference. On first launch, the Vidhi model (<code>~2.5 GB</code>) is downloaded automatically. The knowledge base (<code>~1.6 GB</code>) is fetched during installation if not already present.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <!-- Proof of Concept + Disclaimer -->
+  <section class="section" id="disclaimer" aria-labelledby="disclaimer-heading">
+    <div class="container">
+      <div class="legal-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items:start;">
+        <div>
+          <p class="section-label">Status</p>
+          <h2 id="disclaimer-heading" style="font-size:1.75rem; margin-bottom:16px;">Proof of concept.</h2>
+          <p style="font-size:0.875rem; color:var(--ink-2); font-weight:300; line-height:1.7; margin-bottom:16px;">
+            Writ is a working proof of concept. The framework — offline inference, hybrid retrieval, encrypted on-device knowledge base — is real and functional. But it is not a polished, production-grade product. Expect rough edges, inconsistent outputs, and missing coverage.
+          </p>
+          <p style="font-size:0.875rem; color:var(--ink-2); font-weight:300; line-height:1.7; margin-bottom:16px;">
+            The retrieval model and fine-tune were trained on a limited dataset. The knowledge base does not cover all Indian statutes or judgments comprehensively. Results will vary depending on the specificity of your query.
+          </p>
+          <p style="font-size:0.875rem; color:var(--ink-2); font-weight:300; line-height:1.7;">
+            If you are interested in a properly built, production-ready version — see below.
+          </p>
+        </div>
+        <div>
+          <p class="section-label">Legal Disclaimer</p>
+          <p style="font-size:0.875rem; color:var(--ink-2); font-weight:300; line-height:1.7; margin-bottom:16px;">
+            <strong style="color:var(--ink); font-weight:500;">Writ does not provide legal advice.</strong> Nothing generated by this tool constitutes legal counsel, legal opinion, or a substitute for advice from a qualified advocate.
+          </p>
+          <p style="font-size:0.875rem; color:var(--ink-2); font-weight:300; line-height:1.7; margin-bottom:16px;">
+            Always consult a licensed lawyer before acting on any legal matter. AI-generated responses can be wrong, incomplete, outdated, or contextually inapplicable to your specific situation.
+          </p>
+          <p style="font-size:0.875rem; color:var(--ink-2); font-weight:300; line-height:1.7;">
+            Citations surfaced by the retrieval system must be independently verified against authorised sources before reliance.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <!-- License -->
+  <section class="section" aria-labelledby="license-heading">
+    <div class="container">
+      <p class="section-label">License</p>
+      <h2 id="license-heading" style="font-size:1.75rem; margin-bottom:16px;">Personal use, free of charge.</h2>
+      <p style="font-size:0.875rem; color:var(--ink-2); font-weight:300; line-height:1.7; margin-bottom:16px; max-width:600px;">Writ is licensed for personal, non-commercial use. You may install and run the software on your own device for personal legal research. Redistribution, modification, or commercial use requires explicit written permission from the author.</p>
+      <a href="mailto:prawin@vyapai.tech" id="licensing-contact-link" style="font-size:0.8125rem; color:var(--ink); font-weight:500; text-decoration:none; border-bottom:1px solid var(--rule); padding-bottom:2px;">Licensing inquiries &rarr;</a>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <!-- Contact / Collaboration -->
+  <section class="section" id="contact" aria-labelledby="contact-heading">
+    <div class="container" style="max-width:720px;">
+      <p class="section-label reveal">Collaboration</p>
+      <h2 id="contact-heading" class="reveal" style="font-size:clamp(1.75rem,3.5vw,2.75rem); margin-bottom:20px;">Want this built properly?</h2>
+      <p class="reveal" style="font-size:1rem; font-weight:300; color:var(--ink-2); line-height:1.7; margin-bottom:40px;">
+        The architecture is proven. If you represent a legal firm, institution, or organisation that needs a production-grade offline legal intelligence system — expanded knowledge base, custom fine-tuning, enterprise deployment — reach out.
+      </p>
+
+      <div class="reveal" style="border:1px solid var(--rule); border-radius:12px; padding:40px; background:var(--paper-2);">
+        <p style="font-size:0.75rem; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-3); margin-bottom:16px;">Send an enquiry</p>
+        <div id="typewriter-wrap" style="font-family:'SF Mono','Fira Code',monospace; font-size:0.875rem; color:var(--ink-2); min-height:48px; margin-bottom:28px; line-height:1.6;">
+          <span id="typewriter-text"></span><span id="typewriter-cursor" style="display:inline-block;width:2px;height:1em;background:var(--ink-3);vertical-align:middle;margin-left:2px;animation:blink 1s step-end infinite;"></span>
+        </div>
+        <a id="contact-mailto-btn"
+           href="mailto:prawin@vyapai.tech?cc=prawwiin@gmail.com&subject=Writ%20%E2%80%94%20Collaboration%20Enquiry&body=Hi%20Prawin%2C%0A%0AI%20came%20across%20Writ%20and%20I%E2%80%99m%20interested%20in%20discussing%20a%20production%20deployment.%0A%0AOrganisation%3A%20%0AUse%20case%3A%20%0A%0ARegards%2C"
+           class="btn-primary"
+           style="display:inline-flex;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Open email to prawin@vyapai.tech
+        </a>
+        <p style="font-size:0.75rem; color:var(--ink-3); font-weight:300; margin-top:14px;">Also reaches <span style="font-family:'SF Mono','Fira Code',monospace;">prawwiin@gmail.com</span></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <a href="#" class="footer-logo" aria-label="Writ home">
+      <img src="https://raw.githubusercontent.com/prawinin/writ/main/assets/icon.png" alt="Writ icon" />
+      <span class="footer-logo-text">Writ</span>
+    </a>
+    <ul class="footer-links" role="list">
+      <li><a href="https://github.com/prawinin/writ" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="https://github.com/prawinin/writ/releases" target="_blank" rel="noopener">Releases</a></li>
+      <li><a href="https://huggingface.co/prawinin/vidhi" target="_blank" rel="noopener">Vidhi LLM</a></li>
+      <li><a href="https://prawin.app" target="_blank" rel="noopener">Author</a></li>
+    </ul>
+    <p class="footer-copy">Copyright &copy; 2026 Prawin. All rights reserved. Personal, non-commercial use only.</p>
+  </footer>
+
+  <style>
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  </style>
+
+  <script>
+    // Scroll reveal
+    const observer = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
+      { threshold: 0.08 }
+    );
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Typewriter for contact section
+    const lines = [
+      'To: prawin@vyapai.tech',
+      'CC: prawwiin@gmail.com',
+      'Subject: Writ — Collaboration Enquiry',
+      '',
+      'Hi Prawin,',
+      'I came across Writ and I\'m interested',
+      'in discussing a production deployment.',
+    ];
+    const el = document.getElementById('typewriter-text');
+    let lineIdx = 0, charIdx = 0, output = '';
+
+    function type() {
+      if (lineIdx >= lines.length) return;
+      const line = lines[lineIdx];
+      if (charIdx < line.length) {
+        output += line[charIdx++];
+        el.textContent = output;
+        setTimeout(type, charIdx === 1 ? 120 : 38);
+      } else {
+        output += '\n';
+        el.textContent = output;
+        lineIdx++; charIdx = 0;
+        setTimeout(type, line === '' ? 80 : 180);
+      }
+    }
+
+    // Start typing when contact section scrolls into view
+    const contactSection = document.getElementById('contact');
+    let typed = false;
+    const contactObserver = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && !typed) {
+        typed = true;
+        setTimeout(type, 400);
+      }
+    }, { threshold: 0.3 });
+    contactObserver.observe(contactSection);
+  </script>
+
+</body>
+</html>
+

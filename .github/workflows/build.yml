@@ -2,14 +2,8 @@ name: Build Writ Executables
 
 on:
   push:
-    branches: [ main ]
     tags:
       - 'v*'
-    paths-ignore:
-      - 'README.md'
-      - '.gitignore'
-      - 'LICENSE*'
-      - 'website/**'
   workflow_dispatch:
 
 permissions:

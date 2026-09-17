@@ -43,7 +43,7 @@ if [ -f "${DATA_DIR}/writ_data.dat" ]; then
 else
   if ask "Download Writ Knowledge Base (~1.6 GB) to ${DATA_DIR}?"; then
     echo "Downloading writ_data.dat (~1.6 GB) to ${DATA_DIR}..."
-    curl -L --progress-bar -o "${DATA_DIR}/writ_data.dat" "https://github.com/prawinin/project_writ/releases/download/v1.0.0/writ_data.dat"
+    curl -L --progress-bar -o "${DATA_DIR}/writ_data.dat" "https://github.com/prawinin/writ/releases/download/v1.0.0/writ_data.dat"
     chmod 600 "${DATA_DIR}/writ_data.dat"
     echo "Knowledge base installed."
   else

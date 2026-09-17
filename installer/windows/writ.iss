@@ -76,7 +76,7 @@ begin
   begin
     DownloadPage.Clear;
     if OptionsPage.Values[0] then
-      DownloadPage.Add('https://github.com/prawinin/project_writ/releases/download/v1.0.0/writ_data.dat', 'writ_data.dat', '');
+      DownloadPage.Add('https://github.com/prawinin/writ/releases/download/v1.0.0/writ_data.dat', 'writ_data.dat', '');
 
     if OptionsPage.Values[0] then
     begin

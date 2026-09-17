@@ -41,7 +41,7 @@ if [ ! -f "$DATA_DIR/writ_data.dat" ]; then
     read -p "Download Writ Knowledge Base (~1.6 GB)? [Y/n] " a
     if [[ ! "${a,,}" =~ ^(n|no)$ ]]; then
         echo "Downloading writ_data.dat (~1.6 GB)..."
-        curl -L --progress-bar -o "$DATA_DIR/writ_data.dat" "https://github.com/prawinin/project_writ/releases/download/v1.0.0/writ_data.dat"
+        curl -L --progress-bar -o "$DATA_DIR/writ_data.dat" "https://github.com/prawinin/writ/releases/download/v1.0.0/writ_data.dat"
         chmod 600 "$DATA_DIR/writ_data.dat"
         echo "Knowledge base installed."
     else

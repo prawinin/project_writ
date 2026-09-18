@@ -1605,6 +1605,9 @@
   <div class="setup-spinner"></div>
   <div class="setup-title" id="setupTitle">Starting Writ...</div>
   <div class="setup-desc" id="setupDesc">Initializing local environment</div>
+  <div class="setup-progress-container" style="width: 300px; height: 6px; background: rgba(0,0,0,0.1); border-radius: 3px; margin-top: 20px; overflow: hidden; display: none;" id="pullProgressContainer">
+      <div class="setup-progress-bar" id="pullProgressBar" style="width: 0%; height: 100%; background: var(--text-primary); transition: width 0.3s ease;"></div>
+  </div>
 </div>
 
 <div class="shell">
@@ -2766,6 +2769,16 @@ document.addEventListener('click', e => {
   window.addEventListener('pywebviewready', function() {
     checkOllamaStatus();
   });
+
+  window.update_pull_progress = function(completed, total) {
+    const container = document.getElementById('pullProgressContainer');
+    const bar = document.getElementById('pullProgressBar');
+    if (container && bar && total > 0) {
+      container.style.display = 'block';
+      const percent = Math.min(100, Math.max(0, (completed / total) * 100));
+      bar.style.width = percent + '%';
+    }
+  };
 
   function checkOllamaStatus() {
     window.pywebview.api.check_ollama().then(status => {

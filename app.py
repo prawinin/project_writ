@@ -957,20 +957,29 @@ class Api :
             pass 
         return status 
 
-    def pull_model (self ):
+    def pull_model(self):
         import threading 
 
-        def do_pull ():
-            try :
-                data ={"name":OLLAMA_MODEL ,"stream":False }
-                req =urllib .request .Request (
-                OLLAMA_PULL_URL ,data =json .dumps (data ).encode ("utf-8"),
-                headers ={"Content-Type":"application/json"})
-                with urllib .request .urlopen (req ,timeout =3600 ):
-                    pass 
-            except Exception :
+        def do_pull():
+            try:
+                data = {"name": OLLAMA_MODEL, "stream": True}
+                req = urllib.request.Request(
+                    OLLAMA_PULL_URL, data=json.dumps(data).encode("utf-8"),
+                    headers={"Content-Type": "application/json"})
+                with urllib.request.urlopen(req, timeout=3600) as resp:
+                    for line in resp:
+                        line = line.strip() if isinstance(line, bytes) else line.strip()
+                        if not line: continue
+                        try:
+                            chunk = json.loads(line)
+                            if "completed" in chunk and "total" in chunk:
+                                if self._window is not None:
+                                    self._window.evaluate_js(f"window.update_pull_progress({chunk['completed']}, {chunk['total']});")
+                        except Exception:
+                            pass
+            except Exception:
                 pass 
-        threading .Thread (target =do_pull ,daemon =True ).start ()
+        threading.Thread(target=do_pull, daemon=True).start()
         return True 
 
 

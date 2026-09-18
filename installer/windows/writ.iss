@@ -61,7 +61,7 @@ procedure InitializeWizard;
 begin
   OptionsPage := CreateInputOptionPage(wpSelectTasks,
     'Additional Downloads', 'Select optional components to download',
-    'Would you like to download the offline knowledge base? This is required for the full experience.',
+    'Would you like to download the offline knowledge base? This is required for the full experience.' + #13#10 + #13#10 + 'Note: The Vidhi LLM (~2GB) will be downloaded via Ollama automatically on first run if not already present. Please install Ollama from ollama.com if you haven''t already.',
     False, False);
   
   OptionsPage.Add('Download Writ Knowledge Base (~1.6 GB)');

@@ -37,3 +37,6 @@ eval/results_*.json
 # OS generated
 .DS_Store
 Thumbs.db
+
+# Local PoC eval harness (prompts, runs, reports stay on this machine)
+eval/

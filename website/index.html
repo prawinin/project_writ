@@ -37,7 +37,17 @@
       --sans:     'Inter', system-ui, sans-serif;
     }
 
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; scroll-padding-top: 68px; }
+
+    section[id] { scroll-margin-top: 68px; }
+
+    :focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    ::selection { background: rgba(184, 134, 11, 0.18); color: var(--ink); }
 
     body {
       font-family: var(--sans);
@@ -118,6 +128,24 @@
       background: var(--ink-2) !important;
       transform: translateY(-1px);
     }
+
+    .nav-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      border-radius: var(--radius);
+      cursor: pointer;
+      color: var(--ink);
+    }
+
+    .nav-toggle svg { width: 18px; height: 18px; }
+    .nav-toggle svg.icon-close { display: none; }
+    .nav-toggle[aria-expanded="true"] svg.icon-open { display: none; }
+    .nav-toggle[aria-expanded="true"] svg.icon-close { display: block; }
 
     .section { padding: 100px max(24px, 5vw); }
     .container { max-width: 1100px; margin-inline: auto; }
@@ -505,12 +533,22 @@
     .footer-links a:hover { color: var(--ink); }
     .footer-copy { font-size: 0.75rem; color: var(--ink-3); font-weight: 300; width: 100%; }
 
-    .reveal {
+    html.js .reveal {
       opacity: 0;
       transform: translateY(28px);
       transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .reveal.visible { opacity: 1; transform: none; }
+    html.js .reveal.visible { opacity: 1; transform: none; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html, section[id] { scroll-behavior: auto; }
+      * { animation-duration: 0.001s !important; transition-duration: 0.001s !important; }
+      html.js .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+    }
 
     @media (max-width: 900px) {
       .bento-card.span-7, .bento-card.span-5, .bento-card.span-4, .bento-card.span-8, .bento-card.span-6 { grid-column: span 12; }
@@ -518,6 +556,24 @@
       .step { border-right: none; border-bottom: 1px solid var(--rule); }
       .step:last-child { border-bottom: none; }
       .nav-links { display: none; }
+      .nav-toggle { display: flex; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: rgba(250, 249, 246, 0.97);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--rule);
+        padding: 24px max(24px, 5vw) 32px;
+        box-shadow: 0 16px 40px rgba(15, 15, 14, 0.08);
+      }
+      .nav-links.open .nav-cta { display: inline-block; }
       footer { flex-direction: column; align-items: flex-start; }
       .legal-grid { grid-template-columns: 1fr !important; }
     }
@@ -530,7 +586,7 @@
       <img src="https://raw.githubusercontent.com/prawinin/writ/main/assets/icon.png" alt="Writ icon" />
       <span class="nav-logo-text">Writ</span>
     </a>
-    <ul class="nav-links" role="list">
+    <ul class="nav-links" role="list" id="nav-links">
       <li><a href="#features">Features</a></li>
       <li><a href="#how-it-works">How It Works</a></li>
       <li><a href="#download">Download</a></li>
@@ -538,6 +594,10 @@
       <li><a href="https://prawin.app" target="_blank" rel="noopener">Author</a></li>
       <li><a href="https://github.com/prawinin/writ/releases" class="nav-cta" id="nav-download-btn">Download</a></li>
     </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
+      <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+    </button>
   </nav>
 
   <section class="hero" aria-labelledby="hero-heading">
@@ -823,6 +883,24 @@
   </style>
 
   <script>
+    document.documentElement.classList.add('js');
+
+    // Mobile menu toggle
+    (function () {
+      const btn = document.getElementById('nav-toggle');
+      const menu = document.getElementById('nav-links');
+      if (!btn || !menu) return;
+      const setOpen = (open) => {
+        menu.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', String(open));
+      };
+      btn.addEventListener('click', () => setOpen(!menu.classList.contains('open')));
+      menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && menu.classList.contains('open')) setOpen(false);
+      });
+    })();
+
     // Scroll reveal
     const observer = new IntersectionObserver(
       entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
